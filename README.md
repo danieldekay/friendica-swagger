@@ -1,7 +1,7 @@
 # Friendica API
 
 ## Description
-OpenAPI specification for the Friendica API.
+OpenAPI specification for the Friendica API, generated using https://jules.google.com.
 
 ## API Documentation
 The full API specification, detailing all endpoints, request/response schemas, and parameters, can be found in the [openapi.yaml](openapi.yaml) file in this repository.
