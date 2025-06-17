@@ -1,0 +1,2723 @@
+openapi: 3.0.0
+info:
+  title: Friendica API
+  version: '1.0.0'
+  description: OpenAPI specification for the Friendica API.
+servers:
+  - url: https://{host}/api
+    variables:
+      host:
+        default: demo.friendi.ca
+        description: Your Friendica server host
+components:
+  schemas:
+    Activities:
+      type: object
+      properties:
+        like:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contact'
+        dislike:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contact'
+        attendyes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contact'
+        attendno:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contact'
+        attendmaybe:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contact'
+    Attachment:
+      type: object
+      properties:
+        url:
+          type: string
+          format: url
+        mimetype:
+          type: string
+        size:
+          type: integer
+          format: int64
+          description: File size in bytes
+    Contact:
+      type: object
+      properties:
+        id:
+          type: integer
+        id_str:
+          type: string
+        name:
+          type: string
+        screen_name:
+          type: string
+        location:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        profile_image_url:
+          type: string
+          format: url
+        profile_image_url_https:
+          type: string
+          format: url
+        profile_image_url_profile_size:
+          type: string
+          format: url
+        profile_image_url_large:
+          type: string
+          format: url
+        url:
+          type: string
+          format: url
+          nullable: true
+        protected:
+          type: boolean
+        followers_count:
+          type: integer
+        friends_count:
+          type: integer
+        listed_count:
+          type: integer
+        favourites_count:
+          type: integer
+        statuses_count:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+          example: 'Wed May 23 06:01:13 +0000 2007'
+        utc_offset:
+          type: integer
+          nullable: true
+        time_zone:
+          type: string
+          nullable: true
+        geo_enabled:
+          type: boolean
+        verified:
+          type: boolean
+        lang:
+          type: string
+          nullable: true
+        contributors_enabled:
+          type: boolean
+        is_translator:
+          type: boolean
+        is_translation_enabled:
+          type: boolean
+        following:
+          type: boolean
+        follow_request_sent:
+          type: boolean
+        statusnet_blocking:
+          type: boolean
+          nullable: true
+        notifications:
+          type: boolean
+          nullable: true
+        statusnet_profile_url:
+          type: string
+          format: url
+        uid:
+          type: integer
+        cid:
+          type: integer
+        pid:
+          type: integer
+        self:
+          type: integer # Assuming this is a boolean represented as 0 or 1, but API docs say integer
+        network:
+          type: string
+    Entities:
+      type: object
+      properties:
+        hashtags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Hashtag'
+        symbols:
+          type: array
+          items:
+            $ref: '#/components/schemas/Symbol'
+        urls:
+          type: array
+          items:
+            $ref: '#/components/schemas/URL'
+        user_mentions:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserMention'
+        media:
+          type: array
+          items:
+            $ref: '#/components/schemas/Media'
+    Event:
+      type: object
+      properties:
+        id:
+          type: integer
+        uid:
+          type: integer
+          description: Owner User Id
+        cid:
+          type: integer
+          description: Target Contact Id
+        uri:
+          type: string
+          description: Item unique URI string
+        name:
+          type: string
+          description: Title (Plaintext)
+        desc:
+          type: string
+          description: Description (HTML)
+        startTime:
+          type: string
+          format: date-time
+          description: UTC YYYY-MM-DD HH:II:SS
+        endTime:
+          type: string
+          format: date-time
+          description: 'Optional (null date is 0001-01-01 00:00:00)'
+          nullable: true
+        type:
+          type: string
+          description: event or birthday
+        nofinish:
+          type: boolean
+          description: Ongoing event
+        place:
+          type: string
+          description: Optional. Location.
+          nullable: true
+        ignore:
+          type: boolean
+          description: '???' # API doc is unclear
+        allow_cid:
+          type: string
+          description: 'Optional. List of allowed contact ids (angle-brackets escaped integers)'
+          nullable: true
+        allow_gid:
+          type: string
+          description: 'Optional. List of allowed group ids (angle-brackets escaped integers)'
+          nullable: true
+        deny_cid:
+          type: string
+          description: 'Optional. List of disallowed contact ids (angle-brackets escaped integers)'
+          nullable: true
+        deny_gid:
+          type: string
+          description: 'Optional. List of disallowed group ids (angle-brackets escaped integers)'
+          nullable: true
+    Hashtag: # Defined as Unused in docs, but referenced by Entities
+      type: object
+      properties:
+        text:
+          type: string
+        indices:
+          type: array
+          items:
+            type: integer
+    Item:
+      type: object
+      properties:
+        text:
+          type: string
+          description: Plaintext
+        truncated:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          example: 'Wed May 23 06:01:13 +0000 2007'
+        in_reply_to_status_id:
+          type: integer
+          nullable: true
+        in_reply_to_status_id_str:
+          type: string
+          nullable: true
+        source:
+          type: string
+        id:
+          type: integer
+        id_str:
+          type: string
+        in_reply_to_user_id:
+          type: integer
+          nullable: true
+        in_reply_to_user_id_str:
+          type: string
+          nullable: true
+        in_reply_to_screen_name:
+          type: string
+          nullable: true
+        geo:
+          type: string # Consider a more specific format if available, e.g., GeoJSON
+          nullable: true
+        favorited:
+          type: boolean
+        user:
+          $ref: '#/components/schemas/Contact'
+        friendica_author:
+          $ref: '#/components/schemas/Contact'
+        friendica_owner:
+          $ref: '#/components/schemas/Contact'
+        friendica_private:
+          type: boolean
+        statusnet_html:
+          type: string
+          description: HTML content
+        statusnet_conversation_id:
+          type: integer
+          nullable: true
+        external_url:
+          type: string
+          format: url
+          nullable: true
+        friendica_activities:
+          $ref: '#/components/schemas/Activities'
+        friendica_title:
+          type: string
+          description: Plaintext
+          nullable: true
+        friendica_html:
+          type: string
+          description: HTML content
+          nullable: true
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attachment'
+          nullable: true
+        entities:
+          $ref: '#/components/schemas/Entities'
+          nullable: true # Based on Twitter API, entities can be absent
+    Media: # Based on Twitter Media Object as per Friendica docs
+      type: object
+      properties:
+        id:
+          type: integer
+        id_str:
+          type: string
+        indices:
+          type: array
+          items:
+            type: integer
+        media_url:
+          type: string
+          format: url
+        media_url_https:
+          type: string
+          format: url
+        url:
+          type: string
+          format: url
+        display_url:
+          type: string
+          format: url
+        expanded_url:
+          type: string
+          format: url
+        ext_alt_text:
+          type: string
+          nullable: true
+        type:
+          type: string
+        sizes:
+          $ref: '#/components/schemas/Sizes'
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+        hash:
+          type: string
+        type:
+          type: integer
+          description: |
+            Notification type:
+            1: Inbound follow request
+            2: Outbound follow request confirmation
+            4: Wall-to-wall post
+            8: Reply
+            16: Private message
+            32: Friend suggestion
+            64: Unused
+            128: Mention
+            256: Tag added to a post
+            512: Poke
+            1024: New post
+            16384: System email
+            32768: System event
+        name:
+          type: string
+          description: Full name of the contact subject
+        url:
+          type: string
+          format: url
+          description: Profile page URL of the contact subject
+        photo:
+          type: string
+          format: url
+          description: Profile photo URL of the contact subject
+        date:
+          type: string
+          format: date-time # Or consider string if format is YYYY-MM-DD hh:mm:ss local
+          description: YYYY-MM-DD hh:mm:ss local server time
+        msg:
+          type: string
+          description: BBCode
+        uid:
+          type: integer
+          description: Owner User Id
+        link:
+          type: string
+          format: url
+          description: Notification URL
+        iid:
+          type: integer
+          description: Item Id
+          nullable: true
+        parent:
+          type: integer
+          description: Parent Item Id
+          nullable: true
+        seen:
+          type: boolean # Docs list 'seen' twice with different types, assuming boolean for OpenAPI
+          description: Whether the notification was read or not.
+        verb:
+          type: string
+          format: url
+          description: Activity Streams Verb URL
+          nullable: true
+        otype:
+          type: string
+          enum: [item, intro, mail]
+          description: Subject type
+        name_cache:
+          type: string
+          description: Full name of the contact subject (HTML)
+          nullable: true
+        msg_cache:
+          type: string
+          description: Plaintext version of the notification text with a placeholder ({0}) for the subject contact’s name.
+          nullable: true
+        timestamp:
+          type: integer
+          format: int64 # Unix timestamp
+        date_rel:
+          type: string
+          description: Time since the note was posted, eg “1 hour ago”
+        msg_html:
+          type: string
+          description: HTML
+          nullable: true
+        msg_plain:
+          type: string
+          description: Plaintext
+          nullable: true
+    Photo:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Resource ID (32 hex chars)
+        created:
+          type: string
+          format: date-time # YYYY-MM-DD HH:MM:SS
+        edited:
+          type: string
+          format: date-time # YYYY-MM-DD HH:MM:SS
+        title:
+          type: string
+          nullable: true
+        desc:
+          type: string
+          description: Picture caption (Plaintext)
+          nullable: true
+        album:
+          type: string
+          description: Album name
+        filename:
+          type: string
+          description: Original image filename
+        type:
+          type: string
+          description: MIME Type
+        height:
+          type: integer
+          description: Image height in pixels
+        width:
+          type: integer
+          description: Image width in pixels
+        profile:
+          type: integer # 0 or 1
+          description: 1 if is profile photo
+        allow_cid:
+          type: string
+          description: List of contact ids wrapped in angle brackets allowed to access the photo (ACL).
+          nullable: true
+        allow_gid:
+          type: string
+          description: List of contact group ids wrapped in angle brackets allowed to access the photo (ACL).
+          nullable: true
+        deny_cid:
+          type: string
+          description: List of contact ids wrapped in angle brackets forbidden to access the photo (ACL).
+          nullable: true
+        deny_gid:
+          type: string
+          description: List of contact group ids wrapped in angle brackets forbidden to access the photo (ACL).
+          nullable: true
+        link:
+          type: object
+          # This is described as "Array of Strings (URL) URLs to the different scales indexed by scale number"
+          # For OpenAPI, a map is more appropriate if "scale number" are the keys.
+          additionalProperties:
+            type: string
+            format: url
+          description: URLs to the different scales indexed by scale number if no specific scale was requested. Mutually exclusive with data/datasize.
+          nullable: true
+        datasize:
+          type: integer
+          description: Picture size in bytes if a single scale was requested. Mutually exclusive with link.
+          nullable: true
+        data:
+          type: string
+          format: byte # base64 encoded
+          description: Base64-encoded image data if a single scale was requested. Mutually exclusive with link.
+          nullable: true
+        friendica_activities:
+          $ref: '#/components/schemas/Activities'
+          nullable: true
+        friendica_comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+          nullable: true
+        rights_mismatch:
+          type: boolean
+          description: True if the ACL differs between the picture and the associated item.
+          nullable: true
+    PhotoListItem:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Resource ID (32 hex chars)
+        album:
+          type: string
+          description: Album name
+        filename:
+          type: string
+          description: Original image filename
+        type:
+          type: string
+          description: MIME Type
+        created:
+          type: string
+          format: date-time # YYYY-MM-DD HH:MM:SS
+        edited:
+          type: string
+          format: date-time # YYYY-MM-DD HH:MM:SS
+        desc:
+          type: string
+          description: Picture caption (Plaintext)
+          nullable: true
+        thumb:
+          type: string
+          format: url
+          description: URL of the smallest scale version of the picture.
+    PrivateMessage:
+      type: object
+      properties:
+        id:
+          type: integer
+        sender_id:
+          type: integer
+          description: Sender Contact Id
+        text:
+          type: string
+          description: Can be HTML or plaintext depending on the API call parameter getText.
+        recipient_id:
+          type: integer
+          description: Recipient Contact Id
+        created_at:
+          type: string
+          format: date-time
+          example: 'Wed May 23 06:01:13 +0000 2007'
+        sender_screen_name:
+          type: string
+        recipient_screen_name:
+          type: string
+        sender:
+          $ref: '#/components/schemas/Contact'
+        recipient:
+          $ref: '#/components/schemas/Contact'
+        title:
+          type: string
+          description: Empty if the API call parameter getText is empty or absent.
+          nullable: true
+        friendica_seen:
+          type: boolean # API docs say integer (boolean)
+          description: Whether the private message has been read or not.
+        friendica_parent_uri:
+          type: string
+          nullable: true
+    Profile:
+      type: object
+      properties:
+        profile_id:
+          type: integer
+        profile_name:
+          type: string
+        is_default:
+          type: boolean
+        hide_friends:
+          type: boolean
+          description: Whether the user chose to hide their contact list on their profile.
+        profile_photo:
+          type: string
+          format: url
+          description: Largest size profile picture URL.
+        profile_thumb:
+          type: string
+          format: url
+          description: Smallest size profile picture URL.
+        publish:
+          type: boolean
+          description: Whether the user chose to publish their profile in the local directory.
+        net_publish:
+          type: boolean
+          description: Whether the user chose to publish their profile in the global directory.
+        description:
+          type: string
+          nullable: true
+        date_of_birth:
+          type: string # Consider date format if applicable
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        city: # Docs say locality, then city in example. Using city.
+          type: string
+          nullable: true
+        region:
+          type: string
+          nullable: true
+        postal_code:
+          type: string
+          nullable: true
+        country:
+          type: string
+          nullable: true
+        public_keywords:
+          type: string
+          description: Comma-separated list of words meant to be displayed as hashtags.
+          nullable: true
+        private_keywords:
+          type: string
+          description: Comma-separated list of words meant to be used for search only.
+          nullable: true
+        homepage:
+          type: string
+          format: url
+          nullable: true
+    Size:
+      type: object
+      properties:
+        w:
+          type: integer
+        h:
+          type: integer
+        resize:
+          type: string
+          enum: [fit, crop]
+          nullable: true # Nullable based on Friendica docs table
+    Sizes:
+      type: object
+      properties:
+        medium:
+          $ref: '#/components/schemas/Size'
+        large:
+          $ref: '#/components/schemas/Size'
+          nullable: true # Nullable based on Friendica docs table
+        thumb:
+          $ref: '#/components/schemas/Size'
+          nullable: true # Nullable based on Friendica docs table
+        small:
+          $ref: '#/components/schemas/Size'
+          nullable: true # Nullable based on Friendica docs table
+    Symbol: # Defined as Unused in docs, but referenced by Entities
+      type: object
+      properties:
+        text:
+          type: string
+        indices:
+          type: array
+          items:
+            type: integer
+    URL:
+      type: object
+      properties:
+        url:
+          type: string
+          format: url
+        expanded_url:
+          type: string
+          format: url
+          nullable: true # Assuming this can be null if not expanded
+        display_url:
+          type: string
+          format: url
+          nullable: true # Assuming this can be null
+        indices:
+          type: array
+          items:
+            type: integer
+    UserMention: # Defined as Unused in docs, but referenced by Entities
+      type: object
+      properties:
+        id:
+          type: integer
+        id_str:
+          type: string
+        name:
+          type: string
+        screen_name:
+          type: string
+        indices:
+          type: array
+          items:
+            type: integer
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Specific error message
+        request:
+          type: string
+          description: API path requested
+        code:
+          type: integer # HTTP error code, though docs show string for xml <co.de>
+          description: HTTP error code
+      xml:
+        name: status
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      description: HTTP Basic Authentication
+    oauth1:
+      type: oauth2 # OpenAPI 3.0 doesn't have a direct 'oauth1' type.
+                   # We use 'oauth2' and describe OAuth 1.0 specifics in the description.
+                   # Actual OAuth 1.0 flow is more complex and typically handled by client libraries.
+      description: |
+        Friendica uses OAuth 1.0a for authentication.
+        This definition is a placeholder as OpenAPI 3.0 lacks direct OAuth 1.0a support.
+        Refer to Friendica OAuth 1.0a documentation for implementation details:
+        https://wiki.friendi.ca/docs/api-authentication#oauth-1-0a
+      flows:
+        implicit: # Placeholder flow
+          authorizationUrl: https://{host}/oauth/authorize # Actual URL might differ
+          scopes: {}
+  responses:
+    BadRequest:
+      description: Bad Request - parameters are missing or items can't be found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: Forbidden - authenticated user is missing or lacks permission
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Not Found - the requested resource does not exist
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Error'
+    MethodNotAllowed:
+      description: Method Not Allowed - API was called with an invalid method
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Error'
+    InternalServerError:
+      description: Internal Server Error - other error conditions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Error'
+paths:
+  /friendica/events:
+    get:
+      summary: Returns a list of Event entities for the current logged in user.
+      operationId: getFriendicaEvents
+      tags:
+        - friendica-api
+      security:
+        - basicAuth: []
+        - oauth1: []
+      parameters:
+        - name: since_id
+          in: query
+          description: (optional) minimum event id for pagination
+          required: false
+          schema:
+            type: integer
+        - name: count
+          in: query
+          description: maximum number of items returned, default 20
+          required: false
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: A list of events.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /externalprofile/show:
+    get:
+      summary: Returns a Contact entity for the provided profile URL.
+      operationId: getExternalProfileShow
+      tags:
+        - friendica-api
+      security:
+        - basicAuth: []
+        - oauth1: []
+      parameters:
+        - name: profileurl
+          in: query
+          description: Profile URL
+          required: true
+          schema:
+            type: string
+            format: url
+      responses:
+        '200':
+          description: A contact entity.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Contact'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /statuses/public_timeline:
+    get:
+      summary: Returns a list of public Items posted on this node.
+      operationId: getStatusesPublicTimeline
+      tags:
+        - friendica-api
+      parameters:
+        - name: count
+          in: query
+          description: Items per page (default 20)
+          required: false
+          schema:
+            type: integer
+            default: 20
+        - name: page
+          in: query
+          description: page number
+          required: false
+          schema:
+            type: integer
+        - name: since_id
+          in: query
+          description: minimum id
+          required: false
+          schema:
+            type: integer
+        - name: max_id
+          in: query
+          description: maximum id
+          required: false
+          schema:
+            type: integer
+        - name: exclude_replies
+          in: query
+          description: don’t show replies (default false)
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: conversation_id
+          in: query
+          description: Shows all statuses of a given conversation.
+          required: false
+          schema:
+            type: integer # Assuming it's an ID
+        - name: include_entities
+          in: query
+          description: “true” shows entities for pictures and links (Default false)
+          required: false
+          schema:
+            type: boolean # Docs say "true", using boolean
+            default: false
+      responses:
+        '200':
+          description: A list of public items.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /statuses/networkpublic_timeline:
+    get:
+      summary: Returns a list of public Items this node is aware of.
+      operationId: getStatusesNetworkPublicTimeline
+      tags:
+        - friendica-api
+      parameters:
+        - name: count
+          in: query
+          description: Items per page (default 20)
+          required: false
+          schema:
+            type: integer
+            default: 20
+        - name: page
+          in: query
+          description: page number
+          required: false
+          schema:
+            type: integer
+        - name: since_id
+          in: query
+          description: minimum id
+          required: false
+          schema:
+            type: integer
+        - name: max_id
+          in: query
+          description: maximum id
+          required: false
+          schema:
+            type: integer
+        - name: exclude_replies
+          in: query
+          description: don’t show replies (default false)
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: conversation_id
+          in: query
+          description: Shows all statuses of a given conversation.
+          required: false
+          schema:
+            type: integer # Assuming it's an ID
+        - name: include_entities
+          in: query
+          description: “true” shows entities for pictures and links (Default false)
+          required: false
+          schema:
+            type: boolean # Docs say "true", using boolean
+            default: false
+      responses:
+        '200':
+          description: A list of public items from the network.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /statuses/replies:
+    get:
+      summary: Returns a list of replies.
+      operationId: getStatusesReplies
+      tags:
+        - friendica-api
+      security:
+        - basicAuth: []
+        - oauth1: []
+      parameters:
+        - name: count
+          in: query
+          description: Items per page (default 20)
+          required: false
+          schema:
+            type: integer
+            default: 20
+        - name: page
+          in: query
+          description: page number
+          required: false
+          schema:
+            type: integer
+        - name: since_id
+          in: query
+          description: minimum id
+          required: false
+          schema:
+            type: integer
+        - name: max_id
+          in: query
+          description: maximum id
+          required: false
+          schema:
+            type: integer
+        - name: include_entities
+          in: query
+          description: “true” shows entities for pictures and links (Default false)
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: A list of replies.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /conversation/show:
+    get:
+      summary: Shows all direct answers (excluding the original post) to a given id.
+      description: Unofficial Twitter command.
+      operationId: getConversationShow
+      tags:
+        - friendica-api
+      security:
+        - basicAuth: []
+        - oauth1: []
+      parameters:
+        - name: id
+          in: query
+          description: id of the post
+          required: true
+          schema:
+            type: integer # Assuming it's an ID
+        - name: count
+          in: query
+          description: Items per page (default 20)
+          required: false
+          schema:
+            type: integer
+            default: 20
+        - name: page
+          in: query
+          description: page number
+          required: false
+          schema:
+            type: integer
+        - name: since_id
+          in: query
+          description: minimum id
+          required: false
+          schema:
+            type: integer
+        - name: max_id
+          in: query
+          description: maximum id
+          required: false
+          schema:
+            type: integer
+        - name: include_entities
+          in: query
+          description: “true” shows entities for pictures and links (Default false)
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: A list of items in the conversation.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /statusnet/conversation:
+    get:
+      summary: Alias of GET /conversation/show.
+      operationId: getStatusnetConversation
+      tags:
+        - friendica-api
+        - statusnet-compat
+      security:
+        - basicAuth: []
+        - oauth1: []
+      parameters:
+        - name: id
+          in: query
+          description: id of the post
+          required: true
+          schema:
+            type: integer
+        - name: count
+          in: query
+          description: Items per page (default 20)
+          required: false
+          schema:
+            type: integer
+            default: 20
+        - name: page
+          in: query
+          description: page number
+          required: false
+          schema:
+            type: integer
+        - name: since_id
+          in: query
+          description: minimum id
+          required: false
+          schema:
+            type: integer
+        - name: max_id
+          in: query
+          description: maximum id
+          required: false
+          schema:
+            type: integer
+        - name: include_entities
+          in: query
+          description: “true” shows entities for pictures and links (Default false)
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: A list of items in the conversation.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /statusnet/config:
+    get:
+      summary: Returns the public Friendica node configuration.
+      operationId: getStatusnetConfig
+      tags:
+        - friendica-api
+        - statusnet-compat
+      responses:
+        '200':
+          description: Public node configuration.
+          content:
+            application/json:
+              schema:
+                type: object # Define this schema based on actual response if possible
+            application/xml:
+              schema:
+                type: object # Define this schema based on actual response if possible
+        '403':
+          $ref: '#/components/responses/Forbidden' # If auth is required for some configs
+  /gnusocial/config:
+    get:
+      summary: Alias of GET /statusnet/config.
+      operationId: getGnusocialConfig
+      tags:
+        - friendica-api
+        - gnusocial-compat
+      responses:
+        '200':
+          description: Public node configuration.
+          content:
+            application/json:
+              schema:
+                type: object # Define this schema based on actual response if possible
+            application/xml:
+              schema:
+                type: object # Define this schema based on actual response if possible
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /statusnet/version:
+    get:
+      summary: Returns a fake static StatusNet protocol version.
+      operationId: getStatusnetVersion
+      tags:
+        - friendica-api
+        - statusnet-compat
+      responses:
+        '200':
+          description: StatusNet protocol version.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+            application/xml:
+              schema:
+                type: object # Adjust based on actual XML structure
+                properties:
+                  version:
+                    type: string
+  /gnusocial/version:
+    get:
+      summary: Alias of GET /statusnet/version.
+      operationId: getGnusocialVersion
+      tags:
+        - friendica-api
+        - gnusocial-compat
+      responses:
+        '200':
+          description: GNU Social protocol version (same as StatusNet).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+            application/xml:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+  /friendica/activity/{verb}:
+    post:
+      summary: Add or remove an activity from an item.
+      operationId: postFriendicaActivity
+      tags:
+        - friendica-api
+      security:
+        - basicAuth: []
+        - oauth1: []
+      parameters:
+        - name: verb
+          in: path
+          required: true
+          description: |
+            Activity verb. Can be one of:
+            - like
+            - dislike
+            - attendyes
+            - attendno
+            - attendmaybe
+            To remove an activity, prepend the verb with "un", e.g., "unlike".
+          schema:
+            type: string
+            enum:
+              - like
+              - dislike
+              - attendyes
+              - attendno
+              - attendmaybe
+              - unlike
+              - undislike
+              - unattendyes # Assuming these are valid for removal
+              - unattendno
+              - unattendmaybe
+        - name: id
+          in: query # Docs say "Parameters: id: item id", assuming query param
+          description: item id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Activity successfully applied or removed.
+          content:
+            application/json:
+              schema:
+                type: string # "ok"
+                example: "ok"
+            application/xml:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /direct_messages:
+    get:
+      summary: Deprecated Twitter received direct message list endpoint.
+      operationId: getDirectMessages
+      deprecated: true
+      tags:
+        - friendica-api
+        - direct-messages
+      security:
+        - basicAuth: []
+        - oauth1: []
+      parameters:
+        - name: count
+          in: query
+          description: Items per page (default 20)
+          required: false
+          schema:
+            type: integer
+            default: 20
+        - name: page
+          in: query
+          description: page number
+          required: false
+          schema:
+            type: integer
+        - name: since_id
+          in: query
+          description: minimum id
+          required: false
+          schema:
+            type: integer
+        - name: max_id
+          in: query
+          description: maximum id
+          required: false
+          schema:
+            type: integer
+        - name: getText
+          in: query
+          description: 'Defines the format of the status field. Can be "html" or "plain"'
+          required: false
+          schema:
+            type: string
+            enum: [html, plain]
+        - name: include_entities
+          in: query
+          description: “true” shows entities for pictures and links (Default false)
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: friendica_verbose
+          in: query
+          description: “true” enables different error returns (default “false”)
+          required: false
+          schema:
+            type: boolean # Docs say "true", using boolean
+            default: false
+      responses:
+        '200':
+          description: A list of received direct messages.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PrivateMessage'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PrivateMessage'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /direct_messages/all:
+    get:
+      summary: Returns all Private Messages.
+      operationId: getDirectMessagesAll
+      tags:
+        - friendica-api
+        - direct-messages
+      security:
+        - basicAuth: []
+        - oauth1: []
+      parameters:
+        - name: count
+          in: query
+          description: Items per page (default 20)
+          required: false
+          schema:
+            type: integer
+            default: 20
+        - name: page
+          in: query
+          description: page number
+          required: false
+          schema:
+            type: integer
+        - name: since_id
+          in: query
+          description: minimum id
+          required: false
+          schema:
+            type: integer
+        - name: max_id
+          in: query
+          description: maximum id
+          required: false
+          schema:
+            type: integer
+        - name: getText
+          in: query
+          description: 'Defines the format of the status field. Can be "html" or "plain"'
+          required: false
+          schema:
+            type: string
+            enum: [html, plain]
+        - name: friendica_verbose
+          in: query
+          description: “true” enables different error returns (default “false”)
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: A list of all direct messages.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PrivateMessage'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PrivateMessage'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /direct_messages/conversation:
+    get:
+      summary: Returns all replies of a single private message conversation.
+      operationId: getDirectMessagesConversation
+      tags:
+        - friendica-api
+        - direct-messages
+      security:
+        - basicAuth: []
+        - oauth1: []
+      parameters:
+        - name: uri # URI of the conversation
+          in: query
+          description: URI of the conversation
+          required: true
+          schema:
+            type: string
+        - name: count
+          in: query
+          description: Items per page (default 20)
+          required: false
+          schema:
+            type: integer
+            default: 20
+        - name: page
+          in: query
+          description: page number
+          required: false
+          schema:
+            type: integer
+        - name: since_id
+          in: query
+          description: minimum id
+          required: false
+          schema:
+            type: integer
+        - name: max_id
+          in: query
+          description: maximum id
+          required: false
+          schema:
+            type: integer
+        - name: getText
+          in: query
+          description: 'Defines the format of the status field. Can be "html" or "plain"'
+          required: false
+          schema:
+            type: string
+            enum: [html, plain]
+        - name: friendica_verbose
+          in: query
+          description: “true” enables different error returns (default “false”)
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: A list of direct messages in a conversation.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PrivateMessage'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PrivateMessage'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /direct_messages/sent:
+    get:
+      summary: Deprecated Twitter sent direct message list endpoint.
+      operationId: getDirectMessagesSent
+      deprecated: true
+      tags:
+        - friendica-api
+        - direct-messages
+      security:
+        - basicAuth: []
+        - oauth1: []
+      parameters:
+        - name: count
+          in: query
+          description: Items per page (default 20)
+          required: false
+          schema:
+            type: integer
+            default: 20
+        - name: page
+          in: query
+          description: page number
+          required: false
+          schema:
+            type: integer
+        - name: since_id
+          in: query
+          description: minimum id
+          required: false
+          schema:
+            type: integer
+        - name: max_id
+          in: query
+          description: maximum id
+          required: false
+          schema:
+            type: integer
+        - name: getText
+          in: query
+          description: 'Defines the format of the status field. Can be "html" or "plain"'
+          required: false
+          schema:
+            type: string
+            enum: [html, plain]
+        - name: include_entities
+          in: query
+          description: “true” shows entities for pictures and links (Default false)
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: friendica_verbose
+          in: query
+          description: “true” enables different error returns (default “false”)
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: A list of sent direct messages.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PrivateMessage'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PrivateMessage'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /direct_messages/new:
+    post:
+      summary: Deprecated Twitter direct message submission endpoint.
+      operationId: postDirectMessagesNew
+      deprecated: true
+      tags:
+        - friendica-api
+        - direct-messages
+      security:
+        - basicAuth: []
+        - oauth1: []
+      requestBody:
+        description: Direct message to be sent.
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer # Or string, docs are unclear if it's numeric ID or screen name
+                  description: id of the user
+                screen_name:
+                  type: string
+                  description: screen name (for technical reasons, this value is not unique!)
+                text:
+                  type: string
+                  description: The message
+                replyto: # id of the replied direct message
+                  type: integer
+                  description: ID of the replied direct message
+                  nullable: true
+                title:
+                  type: string
+                  description: Title of the direct message
+                  nullable: true
+              required:
+                - text # user_id or screen_name should be required too
+      responses:
+        '200':
+          description: Direct message sent successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivateMessage' # Assuming it returns the created message
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/PrivateMessage'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /direct_messages/destroy:
+    post: # Should ideally be DELETE, but docs say POST
+      summary: Deprecated Twitter direct message deletion endpoint.
+      operationId: postDirectMessagesDestroy
+      deprecated: true
+      tags:
+        - friendica-api
+        - direct-messages
+      security:
+        - basicAuth: []
+        - oauth1: []
+      requestBody:
+        description: Direct message to be deleted.
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer # ID of the message to be deleted
+                  description: id of the message to be deleted
+                include_entities: # optional, currently not yet implemented
+                  type: boolean
+                  description: optional, currently not yet implemented
+                  nullable: true
+                friendica_parenturi: # optional, can be used for increased safety
+                  type: string
+                  format: uri
+                  description: optional, can be used for increased safety to delete only intended messages
+                  nullable: true
+                friendica_verbose:
+                  type: boolean
+                  description: “true” enables different error returns (default “false”)
+                  default: false
+              required:
+                - id
+      responses:
+        '200':
+          description: Direct message deleted successfully.
+          content:
+            application/json: # Response structure varies based on friendica_verbose
+              schema:
+                oneOf: # To handle varying response structure
+                  - type: object # Default Twitter API response (not yet implemented in Friendica)
+                    properties: {} # Placeholder
+                  - type: object # friendica_verbose=true success
+                    properties:
+                      result:
+                        type: string
+                        example: ok
+                      message:
+                        type: string
+                        example: message deleted
+            application/xml:
+              schema: {} # Similar varying structure, define if known
+        '400':
+          $ref: '#/components/responses/BadRequest' # Response structure varies based on friendica_verbose
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /friendica/direct_messages_setseen:
+    get: # Docs say GET, could also be POST/PUT
+      summary: Sets a direct message as seen.
+      operationId: getFriendicaDirectMessagesSetSeen
+      tags:
+        - friendica-api
+        - direct-messages
+      security:
+        - basicAuth: []
+        - oauth1: []
+      parameters:
+        - name: id
+          in: query
+          description: id of the message to be updated as seen
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Message successfully set to seen.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    example: ok
+                  message:
+                    type: string
+                    example: message set to seen
+            application/xml:
+              schema: {} # Define if XML structure is known
+        '400': # Error response also has result/message
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /friendica/direct_messages_search:
+    get:
+      summary: Returns Private Messages matching the provided search string.
+      operationId: getFriendicaDirectMessagesSearch
+      tags:
+        - friendica-api
+        - direct-messages
+      security:
+        - basicAuth: [] # AUTH required
+        - oauth1: []
+      parameters:
+        - name: searchstring
+          in: query
+          description: string for which the API call should search as '%searchstring%' in field 'body'
+          required: true
+          schema:
+            type: string
+        - name: getText
+          in: query
+          description: 'Optional. plain|html. If ommited, the title is prepended to the plaintext body in the text attribute.'
+          required: false
+          schema:
+            type: string
+            enum: [plain, html]
+        - name: getUserObjects # Doc has typo `getUserObjects`
+          in: query
+          description: 'Optional. true|false. If false, sender and recipient attributes are absent.'
+          required: false
+          schema:
+            type: boolean # Doc says true|false
+      responses:
+        '200':
+          description: Search results.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: # Docs say "true" as string, using boolean for consistency
+                    type: boolean
+                  search_results:
+                    oneOf:
+                      - type: array
+                        items:
+                          $ref: '#/components/schemas/PrivateMessage'
+                      - type: string # In case of "nothing found"
+                        example: nothing found
+            application/xml: {} # Define if XML structure is known
+        '400': # Error response has result/message for "searchstring not specified"
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /friendica/group_show:
+    get:
+      summary: Return all or a specified group of the user with the containing contacts.
+      operationId: getFriendicaGroupShow
+      tags:
+        - friendica-api
+        - groups
+      security:
+        - basicAuth: []
+        - oauth1: []
+      parameters:
+        - name: gid
+          in: query
+          description: optional, if not given, API returns all groups of the user
+          required: false
+          schema:
+            type: integer # Assuming Group ID is an integer
+      responses:
+        '200':
+          description: An array of groups with their contacts.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: name of the group
+                    gid:
+                      type: integer # Assuming Group ID is an integer
+                      description: id of the group
+                    user: # Renamed from 'user' to 'contacts' for clarity, as it's a list of contacts
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Contact'
+            application/xml:
+              schema: # Define XML structure if known
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    gid:
+                      type: integer
+                    user:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Contact'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /friendica/group_create:
+    post:
+      summary: Create the group with the posted array of contacts as members.
+      operationId: postFriendicaGroupCreate
+      tags:
+        - friendica-api
+        - groups
+      security:
+        - basicAuth: []
+        - oauth1: []
+      parameters:
+        - name: name # This is a query parameter according to the doc
+          in: query
+          description: name of the group to be created
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: JSON data as Array like the result of GET api/friendica/group_show.
+        required: true
+        content:
+          application/json: # Docs say "JSON data as Array"
+            schema:
+              type: array # The doc says "JSON data as Array like the result of GET api/friendica/group_show"
+                          # but then lists properties like gid, name, List of Contacts, implying an object for the group itself.
+                          # Assuming it's an object representing the group to be created.
+              items: # If it's truly an array of groups to create
+                type: object
+                properties:
+                  gid: # GID for a new group? Seems odd. Usually assigned by server.
+                    type: integer
+                    nullable: true
+                  name:
+                    type: string
+                  contacts: # Changed from 'List of Contacts' to 'contacts'
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Contact'
+      responses:
+        '200':
+          description: Group creation status.
+          content:
+            application/json:
+              schema:
+                type: object # Docs say "Array of:", but properties suggest a single object response
+                properties:
+                  success:
+                    type: boolean
+                  gid:
+                    type: integer
+                  name:
+                    type: string
+                  status:
+                    type: string
+                    enum: ["missing user", "reactivated", "ok"]
+                  wrong_users: # "array of users, which were not available"
+                    type: array
+                    items:
+                      type: string # Or Contact object if more details are returned
+            application/xml: {} # Define if XML structure is known
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /friendica/group_update:
+    post:
+      summary: Update the group with the posted array of contacts as members.
+      operationId: postFriendicaGroupUpdate
+      tags:
+        - friendica-api
+        - groups
+      security:
+        - basicAuth: []
+        - oauth1: []
+      parameters:
+        - name: gid
+          in: query
+          description: id of the group to be changed
+          required: true
+          schema:
+            type: integer
+        - name: name
+          in: query
+          description: name of the group to be changed
+          required: true # Assuming name is also required for update
+          schema:
+            type: string
+      requestBody:
+        description: JSON data as array like the result of GET api/friendica/group_show.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array # Similar to create, assuming an object for the group to update.
+              items: # If it's an array of groups to update
+                type: object
+                properties:
+                  gid: # Should match the query param gid
+                    type: integer
+                  name: # Should match the query param name
+                    type: string
+                  contacts: # Changed from 'List of Contacts' to 'contacts'
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Contact'
+      responses:
+        '200':
+          description: Group update status.
+          content:
+            application/json:
+              schema:
+                type: object # Docs say "Array of:", but properties suggest a single object response
+                properties:
+                  success:
+                    type: boolean
+                  gid:
+                    type: integer
+                  name:
+                    type: string
+                  status:
+                    type: string
+                    enum: ["missing user", "ok"]
+                  wrong_users:
+                    type: array
+                    items:
+                      type: string # Or Contact object
+            application/xml: {} # Define if XML structure is known
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /friendica/group_delete:
+    post: # Should ideally be DELETE
+      summary: Delete the specified group of contacts.
+      operationId: postFriendicaGroupDelete
+      tags:
+        - friendica-api
+        - groups
+      security:
+        - basicAuth: []
+        - oauth1: []
+      requestBody: # Docs list gid and name as parameters, implying query or form. Using requestBody for POST.
+        description: Group to be deleted.
+        required: true
+        content:
+          application/x-www-form-urlencoded: # Assuming form data for POST
+            schema:
+              type: object
+              properties:
+                gid:
+                  type: integer
+                  description: id of the group to be deleted
+                name:
+                  type: string
+                  description: name of the group to be deleted (must match)
+              required:
+                - gid
+                - name
+      responses:
+        '200':
+          description: Group deletion status.
+          content:
+            application/json:
+              schema:
+                type: object # Docs say "Array of:", but properties suggest a single object response
+                properties:
+                  success:
+                    type: boolean
+                  gid:
+                    type: integer
+                  name:
+                    type: string
+                  status:
+                    type: string
+                    example: deleted
+                  wrong_users: # "empty array"
+                    type: array
+                    items: {} # Empty array
+            application/xml: {} # Define if XML structure is known
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /friendica/notifications:
+    get:
+      summary: Return last 50 Notifications for the current user.
+      operationId: getFriendicaNotifications
+      tags:
+        - friendica-api
+        - notifications
+      security:
+        - basicAuth: []
+        - oauth1: []
+      responses:
+        '200':
+          description: A list of notifications.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /friendica/notifications/seen:
+    post:
+      summary: Set notification as seen.
+      operationId: postFriendicaNotificationsSeen
+      tags:
+        - friendica-api
+        - notifications
+      security:
+        - basicAuth: []
+        - oauth1: []
+      requestBody:
+        description: Notification to mark as seen.
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: id of the notification to set seen
+              required:
+                - id
+      responses:
+        '200':
+          description: Notification marked as seen. Response varies.
+          content:
+            application/json:
+              schema:
+                oneOf: # Can be Item or success status
+                  - $ref: '#/components/schemas/Item'
+                  - type: object
+                    properties:
+                      success: # Literal "success" string for JSON
+                        type: string
+                        example: success
+            application/xml:
+              schema:
+                oneOf: # Can be Item or success status
+                  - $ref: '#/components/schemas/Item'
+                  - type: object # <status>success</status>
+                    properties:
+                      status:
+                        type: string
+                        example: success
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /friendica/photo:
+    get:
+      summary: Returns a Photo.
+      operationId: getFriendicaPhoto
+      tags:
+        - friendica-api
+        - photos
+      security:
+        - basicAuth: []
+        - oauth1: []
+      parameters:
+        - name: photo_id
+          in: query
+          description: Resource id of a photo.
+          required: true
+          schema:
+            type: string # 32 hex chars
+        - name: scale
+          in: query
+          description: (optional) scale value of the photo (0-6)
+          required: false
+          schema:
+            type: integer
+            enum: [0, 1, 2, 3, 4, 5, 6]
+      responses:
+        '200':
+          description: Photo data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Photo'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Photo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /friendica/photos/list:
+    get:
+      summary: Returns the API user’s Photo List Items.
+      operationId: getFriendicaPhotosList
+      tags:
+        - friendica-api
+        - photos
+      security:
+        - basicAuth: []
+        - oauth1: []
+      responses:
+        '200':
+          description: A list of photo list items.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PhotoListItem'
+            application/xml:
+              schema:
+                type: object # <photos type="array">
+                properties:
+                  photo: # XML structure has <photo> elements
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PhotoListItem' # Mapping might need adjustment for XML attributes
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /friendica/photo/create:
+    post:
+      summary: Alias of POST /friendica/photo/update (for creating a new photo).
+      operationId: postFriendicaPhotoCreate
+      tags:
+        - friendica-api
+        - photos
+      security:
+        - basicAuth: []
+        - oauth1: []
+      requestBody:
+        description: Photo to create. See /friendica/photo/update for details.
+        required: true
+        content:
+          multipart/form-data: # Assuming image upload
+            schema:
+              type: object
+              properties:
+                media: # image data as base64 - but multipart is better for files
+                  type: string
+                  format: binary # For file upload
+                  description: Image data.
+                desc:
+                  type: string
+                  description: (optional) description for the photo
+                album: # name of the album (always necessary)
+                  type: string
+                  description: name of the album to be created or used
+                allow_cid:
+                  type: string
+                  description: '<x><y><z> for private photo'
+                allow_gid:
+                  type: string
+                deny_cid:
+                  type: string
+                deny_gid:
+                  type: string
+              required:
+                - media
+                - album
+      responses:
+        '200':
+          description: Photo created/updated successfully. See /friendica/photo/update for response details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Photo' # Successful creation returns photo data
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /friendica/photo/update:
+    post:
+      summary: Saves/updates data for a photo.
+      operationId: postFriendicaPhotoUpdate
+      tags:
+        - friendica-api
+        - photos
+      security:
+        - basicAuth: []
+        - oauth1: []
+      requestBody:
+        description: Photo data to update.
+        required: true
+        content:
+          multipart/form-data: # Assuming image upload for 'media'
+            schema:
+              type: object
+              properties:
+                photo_id:
+                  type: string
+                  description: (optional) if specified the photo with this id will be updated
+                media:
+                  type: string
+                  format: binary # For file upload
+                  description: (optional) image data, only optional if photo_id is specified
+                desc:
+                  type: string
+                  description: (optional) description for the photo
+                album: # name of the album (always necessary)
+                  type: string
+                  description: name of the album
+                album_new:
+                  type: string
+                  description: (optional) can be used to change the album of a single photo if photo_id is specified
+                allow_cid:
+                  type: string
+                allow_gid:
+                  type: string
+                deny_cid:
+                  type: string
+                deny_gid:
+                  type: string
+              required:
+                - album # 'media' or 'photo_id' should be required
+      responses:
+        '200':
+          description: Photo updated successfully. Response varies.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/Photo' # New photo uploaded or changed photo data
+                  - type: object # Changed info
+                    properties:
+                      result:
+                        type: string
+                        example: updated
+                      message:
+                        type: string
+                  - type: object # Nothing changed
+                    properties:
+                      result:
+                        type: string
+                        example: cancelled
+                      message:
+                        type: string
+        '400':
+          $ref: '#/components/responses/BadRequest' # Various error messages
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError' # Various error messages
+  /friendica/photo/delete:
+    post: # Should ideally be DELETE
+      summary: Deletes a single image.
+      operationId: postFriendicaPhotoDelete
+      tags:
+        - friendica-api
+        - photos
+      security:
+        - basicAuth: []
+        - oauth1: []
+      requestBody:
+        description: Photo to delete.
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                photo_id:
+                  type: string
+                  description: id of the photo to be deleted
+              required:
+                - photo_id
+      responses:
+        '200':
+          description: Photo deleted successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    example: deleted
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /friendica/photoalbum/delete:
+    post: # Should ideally be DELETE
+      summary: Deletes all images within a specified album.
+      operationId: postFriendicaPhotoAlbumDelete
+      tags:
+        - friendica-api
+        - photos
+        - albums
+      security:
+        - basicAuth: []
+        - oauth1: []
+      requestBody:
+        description: Album to delete.
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                album:
+                  type: string
+                  description: name of the album to be deleted
+              required:
+                - album
+      responses:
+        '200':
+          description: Album deleted successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    example: deleted
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /friendica/photoalbum/update:
+    post:
+      summary: Changes the album name for all photos in an album.
+      operationId: postFriendicaPhotoAlbumUpdate
+      tags:
+        - friendica-api
+        - photos
+        - albums
+      security:
+        - basicAuth: []
+        - oauth1: []
+      requestBody:
+        description: Album to update.
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                album:
+                  type: string
+                  description: name of the album to be updated
+                album_new:
+                  type: string
+                  description: new name of the album
+              required:
+                - album
+                - album_new
+      responses:
+        '200':
+          description: Album updated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+                    example: updated
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /friendica/profile/show:
+    get:
+      summary: Returns the Profile data of the authenticated user.
+      operationId: getFriendicaProfileShow
+      tags:
+        - friendica-api
+        - profile
+      security:
+        - basicAuth: []
+        - oauth1: []
+      # No parameters listed in the main description, but it implies profile_id might be used if not for authenticated user.
+      # However, the description says "authenticated user", so no params for now.
+      responses:
+        '200':
+          description: Profile data of the authenticated user.
+          content:
+            application/json:
+              schema:
+                type: object # Response is an array/object with global_dir, friendica_owner, profiles
+                properties:
+                  global_dir:
+                    type: string
+                    format: url
+                    description: URL of the global directory set in server settings
+                  friendica_owner: # Assuming this is a Contact or User object
+                    $ref: '#/components/schemas/Contact' # Or a more specific User object if defined
+                    description: user data of the authenticated user
+                  profiles:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Profile'
+            application/xml:
+              schema: {} # Define if XML structure is known
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  # Deprecated endpoint - not fully defined as details are sparse and it's deprecated.
+  # /statuses/mediap:
+  #   post:
+  #     summary: Deprecated endpoint for media posting.
+  #     operationId: postStatusesMediap
+  #     deprecated: true
+  #     tags:
+  #       - friendica-api
+  #       - deprecated
+  #     responses:
+  #       '501': # Not Implemented, or a more specific error for deprecated APIs
+  #         description: This API is deprecated.
+  /oauth/access_token:
+    post:
+      summary: Obtain an access token (Twitter API compatible).
+      operationId: postOauthAccessToken
+      tags:
+        - twitter-api
+        - oauth
+      # No explicit security for this endpoint itself, it's part of OAuth flow.
+      # Parameters are typically x_auth_*, but Friendica docs say these are unsupported.
+      # This implies Friendica might handle it differently or expects standard OAuth1 params.
+      # For now, defining without specific parameters beyond what OAuth1 implies.
+      requestBody:
+        description: OAuth parameters for obtaining an access token.
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                oauth_verifier: # Example, actual params depend on OAuth flow stage
+                  type: string
+                # Other OAuth parameters as needed by the flow
+      responses:
+        '200':
+          description: Access token obtained successfully.
+          content:
+            application/x-www-form-urlencoded: # Twitter typically returns this format
+              schema:
+                type: object
+                properties:
+                  oauth_token:
+                    type: string
+                  oauth_token_secret:
+                    type: string
+                  user_id: # Example additional fields
+                    type: string
+                  screen_name:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401': # Unauthorized
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /oauth/request_token:
+    post:
+      summary: Obtain a request token (Twitter API compatible).
+      operationId: postOauthRequestToken
+      tags:
+        - twitter-api
+        - oauth
+      requestBody:
+        description: OAuth parameters for obtaining a request token.
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                oauth_callback:
+                  type: string
+                  format: url
+                # x_auth_access_type is unsupported by Friendica
+      responses:
+        '200':
+          description: Request token obtained successfully.
+          content:
+            application/x-www-form-urlencoded:
+              schema:
+                type: object
+                properties:
+                  oauth_token:
+                    type: string
+                  oauth_token_secret:
+                    type: string
+                  oauth_callback_confirmed:
+                    type: boolean # Should be "true"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /account/verify_credentials:
+    get:
+      summary: Returns an HTTP 200 OK response code and a representation of the requesting user if authentication was successful.
+      operationId: getAccountVerifyCredentials
+      tags:
+        - twitter-api
+        - account
+      security:
+        - basicAuth: []
+        - oauth1: []
+      parameters:
+        - name: include_entities # Supported by Twitter, but Friendica default is false
+          in: query
+          description: The entities node will not be included when set to false. (Friendica default: false)
+          required: false
+          schema:
+            type: boolean
+            default: false
+        # include_email is unsupported by Friendica
+      responses:
+        '200':
+          description: Authenticated user details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact' # Friendica uses its Contact entity
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Contact'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /account/update_profile:
+    post:
+      summary: Sets values that users are able to set under the "Account" tab of their settings page.
+      operationId: postAccountUpdateProfile
+      tags:
+        - twitter-api
+        - account
+      security:
+        - basicAuth: []
+        - oauth1: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Full name associated with the profile. Maximum of 50 characters.
+                  maxLength: 50
+                # url is unsupported
+                # location is unsupported
+                description:
+                  type: string
+                  description: Description of the user. Maximum of 160 characters.
+                  maxLength: 160
+                # profile_link_color is unsupported
+                # include_entities is unsupported for this POST
+                # skip_status is unsupported
+      responses:
+        '200':
+          description: Profile updated successfully. Returns the updated user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Contact'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Unauthorized
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /account/update_profile_image:
+    post:
+      summary: Updates the authenticating user’s profile image.
+      operationId: postAccountUpdateProfileImage
+      tags:
+        - twitter-api
+        - account
+      security:
+        - basicAuth: []
+        - oauth1: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary # base64 encoded string or binary file
+                  description: The avatar image for the profile. Must be a valid GIF, JPG, or PNG image of less than 700 kilobytes in size. Images with width larger than 400 pixels will be scaled down. Animated GIFs will be converted to a static GIF of the first frame, removing the animation.
+                profile_id: # Friendica-specific additional parameter
+                  type: integer
+                  description: (optional) Numerical id of the profile for which the image should be used, default is changing the default profile.
+              required:
+                - image
+      responses:
+        '200':
+          description: Profile image updated successfully. Returns the updated user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Contact'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Unauthorized
+        '403':
+          $ref: '#/components/responses/Forbidden'
